@@ -52,3 +52,7 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+/.vs/ApiServer/CopilotIndices
+/.vs/ApiServer/copilot-chat
+/.vs/CopilotSnapshots
+/.vs/ApiServer

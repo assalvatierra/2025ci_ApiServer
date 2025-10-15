@@ -1,6 +1,18 @@
-@ApiServer_HostAddress = https://localhost:32773
+@ApiServer_HostAddress = https://localhost:44321
 
 GET {{ApiServer_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+
+
+GET {{ApiServer_HostAddress}}/api/Database/
+###
+
+
+POST {{ApiServer_HostAddress}}/api/Database/
+###
+
+
+

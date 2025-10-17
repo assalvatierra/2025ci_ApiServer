@@ -23,9 +23,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build ./ApiServer.sln --no-restore
+      run: |
+        dotnet build ApiServer/ApiServer.csproj --no-restore
+        dotnet build TestProject1/TestProject1.csproj --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal    
+      run: dotnet test TestProject1/TestProject1.csproj --no-build --verbosity normal    
 
   build-container:
     runs-on: ubuntu-latest

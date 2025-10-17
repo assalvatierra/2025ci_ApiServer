@@ -6,7 +6,7 @@ builder.Services.AddControllers();
 // Add this line if not already present:
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+//builder.Services.AddOpenApi();
 
 // Add CORS services
 builder.Services.AddCors(options =>
@@ -24,7 +24,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    //app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();

@@ -33,7 +33,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build Docker image
-      run: docker build -t myapp:latest -f Api/Dockerfile ApiServer/
+      run: docker build -t myapp:latest -f ApiServer/Dockerfile ApiServer/
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v3
       with:

@@ -20,7 +20,7 @@ namespace ApiServer.Controllers
         [HttpGet(Name = "test-api-call")]
         public string test()
         {
-            return "Msg from test-api-call endpoint.";
+            return "Reply from test-api-call endpoint.";
         }
 
         [HttpPost(Name = "initialize")]

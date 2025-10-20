@@ -19,3 +19,21 @@ POST http://localhost:8080/Api/Database/
 ###
 
 GET https://localhost:44321/weatherforecast/
+###
+
+GET https://localhost:44321/SaveWeatherForecast/
+###
+
+
+
+POST {{ApiServer_HostAddress}}/WeatherForecast/save
+Content-Type: application/json
+
+{
+  "date": "2025-10-20",
+  "temperatureC": 23,
+  "summary": "Warm"
+}
+
+###
+

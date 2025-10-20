@@ -57,4 +57,6 @@ public class WeatherForecastController : ControllerBase
         return Ok(new { Message = "Weather forecast saved successfully." });
     }
 
+
+
 }

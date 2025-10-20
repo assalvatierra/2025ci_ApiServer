@@ -1,6 +1,13 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    options.InstanceName = "Redis";
+});
+
+builder.Services.AddScoped<ApiServer.RedisCacheService>();
 
 builder.Services.AddControllers();
 // Add this line if not already present:

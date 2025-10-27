@@ -17,8 +17,10 @@ RUN dotnet restore "ApiServer.csproj"
 
 # Copy everything else and build
 COPY . ./
-# Publish the project explicitly to avoid building a solution that may reference other projects with incorrect paths
-RUN dotnet publish "ApiServer.csproj" -c Release -o /app/out --no-restore
+# Clear any local NuGet cache and restore again to avoid path issues
+RUN dotnet clean "ApiServer.csproj"
+RUN dotnet restore "ApiServer.csproj" --force
+RUN dotnet publish "ApiServer.csproj" -c Release -o /app/out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final

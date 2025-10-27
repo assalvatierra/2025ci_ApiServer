@@ -1,3 +1,5 @@
+using ApiServer.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -26,6 +28,9 @@ if (mongoSettings == null || string.IsNullOrWhiteSpace(mongoSettings.ConnectionU
     logger.LogError("MongoDB connection settings are missing or invalid. Check appsettings.json ConnectionStrings:MongoDB section.");
     throw new ArgumentNullException("MongoDB:ConnectionURI", "MongoDB connection string is not configured. Check appsettings.json ConnectionStrings:MongoDB.ConnectionURI");
 }
+
+// Inject Custom Services
+builder.Services.AddScoped<SystemUserServices>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();

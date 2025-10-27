@@ -34,6 +34,15 @@ Content-Type: application/json
   "temperatureC": 23,
   "summary": "Warm"
 }
-
 ###
 
+GET {{ApiServer_HostAddress}}/api/User/test
+###
+
+
+POST {{ApiServer_HostAddress}}/api/User/login
+Content-Type: application/json
+Accept: application/json
+
+{ "username": "admin", "password": "password" }
+###

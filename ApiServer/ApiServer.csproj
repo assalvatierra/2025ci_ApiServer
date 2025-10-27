@@ -15,6 +15,7 @@
     <PackageReference Include="Npgsql" Version="8.0.8" />
     <PackageReference Include="StackExchange.Redis" Version="2.9.32" />
     <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>
 
   <ItemGroup>

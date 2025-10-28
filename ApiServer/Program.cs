@@ -30,7 +30,18 @@ if (mongoSettings == null || string.IsNullOrWhiteSpace(mongoSettings.ConnectionU
 }
 
 // Inject Custom Services
+builder.Services.AddScoped<ApiServer.Postgres.PostgreSQLService>();
+builder.Services.Configure<ApiServer.Postgres.PostgreSQLSettings>(options =>
+{
+    options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    // Set other properties if needed, e.g.:
+    // options.CommandTimeout = 30;
+    // options.MaxPoolSize = 100;
+});
+
+builder.Services.AddScoped<ApiServer.Postgres.Repository.IAspNetUserRepo, ApiServer.Postgres.Repository.AspNetUserRepo>();
 builder.Services.AddScoped<SystemUserServices>();
+
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();

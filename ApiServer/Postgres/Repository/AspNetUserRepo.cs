@@ -71,22 +71,31 @@ namespace ApiServer.Postgres.Repository
             {
                 new NpgsqlParameter("@UserName", username)
             };
+            try
+            {
 
-            var users = await _postgresService.ExecuteQueryAsync<AspNetUser>(sql,
-                reader => new AspNetUser
-                {
-                    Id = reader.GetString(reader.GetOrdinal("Id")),
-                    UserName = reader.GetString(reader.GetOrdinal("UserName")),
-                    Email = reader.GetString(reader.GetOrdinal("Email")),
-                    PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
-                    PhoneNumber = reader.IsDBNull(reader.GetOrdinal("PhoneNumber")) ? null : reader.GetString(reader.GetOrdinal("PhoneNumber")),
-                    EmailConfirmed = reader.GetBoolean(reader.GetOrdinal("EmailConfirmed")),
-                    IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
-                    CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
-                    LastModifiedDate = reader.IsDBNull(reader.GetOrdinal("LastModifiedDate")) ? null : reader.GetDateTime(reader.GetOrdinal("LastModifiedDate"))
-                },
-                parameters);
-            return users;
+
+                var users = await _postgresService.ExecuteQueryAsync<AspNetUser>(sql,
+                    reader => new AspNetUser
+                    {
+                        Id = reader.GetString(reader.GetOrdinal("Id")),
+                        UserName = reader.GetString(reader.GetOrdinal("UserName")),
+                        Email = reader.GetString(reader.GetOrdinal("Email")),
+                        PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
+                        PhoneNumber = reader.IsDBNull(reader.GetOrdinal("PhoneNumber")) ? null : reader.GetString(reader.GetOrdinal("PhoneNumber")),
+                        EmailConfirmed = reader.GetBoolean(reader.GetOrdinal("EmailConfirmed")),
+                        IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
+                        CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
+                        LastModifiedDate = reader.IsDBNull(reader.GetOrdinal("LastModifiedDate")) ? null : reader.GetDateTime(reader.GetOrdinal("LastModifiedDate"))
+                    },
+                    parameters);
+                return users;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetUserByUsernameAsync: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<AspNetUser?> GetUserByEmailAsync(string email)

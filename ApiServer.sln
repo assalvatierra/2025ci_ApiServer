@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiServer", "ApiServer\ApiS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject1", "TestProject1\TestProject1.csproj", "{6F84B464-D2A2-BADB-55FE-4525AFA1BDD6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularApp1.Server", "..\..\App2025\AngularApp1\AngularApp1.Server\AngularApp1.Server.csproj", "{FB0EC9E0-94A3-667C-AEE3-4EE2F25219E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6F84B464-D2A2-BADB-55FE-4525AFA1BDD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F84B464-D2A2-BADB-55FE-4525AFA1BDD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F84B464-D2A2-BADB-55FE-4525AFA1BDD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB0EC9E0-94A3-667C-AEE3-4EE2F25219E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB0EC9E0-94A3-667C-AEE3-4EE2F25219E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB0EC9E0-94A3-667C-AEE3-4EE2F25219E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB0EC9E0-94A3-667C-AEE3-4EE2F25219E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,11 +1,8 @@
 using ApiServer.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Threading.Tasks;
+//using System.Threading.Tasks;
+using ApiServer.Postgres;
 
 namespace ApiServer.Controllers
 {
@@ -13,12 +10,11 @@ namespace ApiServer.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
         private readonly SystemUserServices _UserServices;
 
-        public UserController(SystemUserServices _UserServices)
+        public UserController(SystemUserServices userServices)
         {
-            this._UserServices = _UserServices;
+            this._UserServices = userServices;
         }
 
         [HttpGet("test")]
@@ -65,8 +61,8 @@ namespace ApiServer.Controllers
                 return BadRequest(new { message = "Username and password are required." });
             }
 
-            // Login with username and password
-            int IsLoginSuccessful = this._UserServices.LoginWithUsernamePassword(username, password);
+            // Login with username and password using PostgreSQLService
+            int IsLoginSuccessful = await this._UserServices.LoginWithUsernamePassword(username, password);
 
             // Generate Jwt Token if login is successful
             if (IsLoginSuccessful <= 0)
@@ -77,7 +73,7 @@ namespace ApiServer.Controllers
             // Generate Jwt Token if login is successful
             var token = this._UserServices.GenerateJwtToken(username);
 
-            if (token == null)
+            if (string.IsNullOrEmpty(token))
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Error generating token." });
             }
@@ -103,7 +99,7 @@ namespace ApiServer.Controllers
                 return BadRequest(new { message = "Username and password are required." });
             }
 
-            var result = this._UserServices.registerUser(username, password, email, phone);
+            var result = await this._UserServices.registerUser(username, password, email, phone);
             if (result <= 0)
             {
                 return BadRequest(new { message = "Registration failed." });

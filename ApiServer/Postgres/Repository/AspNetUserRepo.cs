@@ -65,7 +65,7 @@ namespace ApiServer.Postgres.Repository
 
         public async Task<AspNetUser?> GetUserByUsernameAsync(string username)
         {
-            var sql = "SELECT * FROM AspNetUsers WHERE UserName = @UserName AND IsActive = true";
+            var sql = "SELECT * FROM public.\"AspNetUsers\" WHERE \"UserName\" = @UserName";
 
             var parameters = new[]
             {
@@ -80,13 +80,10 @@ namespace ApiServer.Postgres.Repository
                     {
                         Id = reader.GetString(reader.GetOrdinal("Id")),
                         UserName = reader.GetString(reader.GetOrdinal("UserName")),
-                        Email = reader.GetString(reader.GetOrdinal("Email")),
+                        Email = reader.IsDBNull(reader.GetOrdinal("Email")) ? null : reader.GetString(reader.GetOrdinal("Email")),
                         PasswordHash = reader.GetString(reader.GetOrdinal("PasswordHash")),
                         PhoneNumber = reader.IsDBNull(reader.GetOrdinal("PhoneNumber")) ? null : reader.GetString(reader.GetOrdinal("PhoneNumber")),
-                        EmailConfirmed = reader.GetBoolean(reader.GetOrdinal("EmailConfirmed")),
-                        IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive")),
-                        CreatedDate = reader.GetDateTime(reader.GetOrdinal("CreatedDate")),
-                        LastModifiedDate = reader.IsDBNull(reader.GetOrdinal("LastModifiedDate")) ? null : reader.GetDateTime(reader.GetOrdinal("LastModifiedDate"))
+                        EmailConfirmed = reader.GetBoolean(reader.GetOrdinal("EmailConfirmed"))
                     },
                     parameters);
                 return users;

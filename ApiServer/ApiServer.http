@@ -44,5 +44,18 @@ POST {{ApiServer_HostAddress}}/api/User/login
 Content-Type: application/json
 Accept: application/json
 
-{ "username": "admin", "password": "password" }
+{ "username": "testuser", "password": "testpassword" }
+###
+
+
+POST {{ApiServer_HostAddress}}/api/User/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "testuser",
+  "password": "testpassword",
+  "email": "test@example.com",
+  "phoneNumber": "1234567890"
+}
 ###

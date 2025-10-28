@@ -36,6 +36,19 @@ namespace ApiServer.Controllers
             public string? Password { get; set; }
         }
 
+        public class RegisterRequest
+        {
+            [Required]
+            public string? Username { get; set; }
+
+            [Required]
+            public string? Password { get; set; }
+
+            public string? Email { get; set; }
+
+            public string? PhoneNumber { get; set; }
+        }
+
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginRequest request)
         {
@@ -72,6 +85,32 @@ namespace ApiServer.Controllers
             return Ok(new { token });
         }
 
+        [HttpPost("register")]
+        public async Task<ActionResult> Register([FromBody] RegisterRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var username = request.Username;
+            var password = request.Password;
+            var email = request.Email;
+            var phone = request.PhoneNumber;
+
+            if (username == null || password == null)
+            {
+                return BadRequest(new { message = "Username and password are required." });
+            }
+
+            var result = this._UserServices.registerUser(username, password, email, phone);
+            if (result <= 0)
+            {
+                return BadRequest(new { message = "Registration failed." });
+            }
+
+            return Ok(new { message = "Registered successfully" });
+        }
 
     }
 }

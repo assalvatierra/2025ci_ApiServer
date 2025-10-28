@@ -17,8 +17,8 @@ namespace ApiServer.Postgres.Repository
 
         public async Task<int> CreateUserAsync(string username, string email, string passwordHash, string? phoneNumber = null)
         {
-            var sql = @"INSERT INTO AspNetUsers (Id, UserName, Email, PasswordHash, PhoneNumber, EmailConfirmed, IsActive, CreatedDate) 
-                        VALUES (@Id, @UserName, @Email, @PasswordHash, @PhoneNumber, @EmailConfirmed, @IsActive, @CreatedDate)";
+            var sql = "INSERT INTO public.\"AspNetUsers\"\r\n(\"Id\", \"UserName\", \"NormalizedUserName\", \"Email\", \"NormalizedEmail\", \"EmailConfirmed\", \"PasswordHash\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEnabled\", \"AccessFailedCount\")\r\n"
+                +"VALUES(@Id, @UserName, '', @Email, '', false, @PasswordHash, @PhoneNumber, false, false, false, 0);";
 
             var parameters = new[]
             {
@@ -27,12 +27,18 @@ namespace ApiServer.Postgres.Repository
                 new NpgsqlParameter("@Email", email),
                 new NpgsqlParameter("@PasswordHash", passwordHash),
                 new NpgsqlParameter("@PhoneNumber", (object?)phoneNumber ?? DBNull.Value),
-                new NpgsqlParameter("@EmailConfirmed", false),
-                new NpgsqlParameter("@IsActive", true),
-                new NpgsqlParameter("@CreatedDate", DateTime.UtcNow)
             };
 
-            return await _postgresService.ExecuteNonQueryAsync(sql, parameters);
+            try { 
+                Console.WriteLine("Executing SQL: " + sql);
+                return await _postgresService.ExecuteNonQueryAsync(sql, parameters);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error logging SQL: " + ex.Message);
+                return -1;
+            }
+            
         }
 
         public async Task<AspNetUser?> GetUserByIdAsync(string userId)
@@ -73,8 +79,6 @@ namespace ApiServer.Postgres.Repository
             };
             try
             {
-
-
                 var users = await _postgresService.ExecuteQueryAsync<AspNetUser>(sql,
                     reader => new AspNetUser
                     {

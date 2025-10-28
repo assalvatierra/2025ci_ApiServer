@@ -1,13 +1,10 @@
 ﻿using ApiServer.Controllers;
 using ApiServer.Services;
+using ApiServer.Postgres.Repository;
 using Microsoft.AspNetCore.Mvc;
-using System.Data.Common;
-using Microsoft.Data.Sqlite;
-using ApiServer.Postgres;
+using Microsoft.AspNetCore.Identity;
 using Moq;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
-
+using Xunit;
 
 namespace TestProject1
 {
@@ -17,19 +14,9 @@ namespace TestProject1
         public void UserController_Test_ShouldReturnWorkingMessage()
         {
             // Arrange
-            var mockPostgreSQLSettings = Mock.Of<IOptions<PostgreSQLSettings>>(x =>
-                x.Value == new PostgreSQLSettings
-                {
-                    ConnectionString = "test",
-                    CommandTimeout = 30,
-                    MaxPoolSize = 100
-                });
-
-            var mockLogger = Mock.Of<ILogger<PostgreSQLService>>();
-            var postgresService = new PostgreSQLService(mockPostgreSQLSettings, mockLogger);
-            var systemUserServices = new SystemUserServices(postgresService);
-
-            var controller = new UserController(systemUserServices, postgresService);
+            var mockRepo = new Mock<IAspNetUserRepo>();
+            var systemUserServices = new SystemUserServices(mockRepo.Object);
+            var controller = new UserController(systemUserServices);
 
             // Act
             var result = controller.Test();
@@ -47,63 +34,61 @@ namespace TestProject1
         public async Task UserController_Login_WithValidCredentials_ReturnsOk()
         {
             // Arrange
-            var mockPostgreSQLSettings = Mock.Of<IOptions<PostgreSQLSettings>>(x =>
-                x.Value == new PostgreSQLSettings
-                {
-                    ConnectionString = "test",
-                    CommandTimeout = 30,
-                    MaxPoolSize = 100
-                });
+            var username = "testuser";
+            var plainPassword = "testpassword";
 
-            var mockLogger = Mock.Of<ILogger<PostgreSQLService>>();
-            var postgresService = new PostgreSQLService(mockPostgreSQLSettings, mockLogger);
-            var systemUserServices = new SystemUserServices(postgresService);
+            // Prepare a mocked repo that returns a user with a valid hashed password
+            var mockRepo = new Mock<IAspNetUserRepo>();
+            var hasher = new PasswordHasher<object>();
+            var hashed = hasher.HashPassword(null, plainPassword);
 
-            var controller = new UserController(systemUserServices, postgresService);
-            var request = new UserController.LoginRequest { Username = "testuser", Password = "testpassword" };
+            mockRepo
+                .Setup(r => r.GetUserByUsernameAsync(username))
+                .ReturnsAsync(new AspNetUser { UserName = username, PasswordHash = hashed });
+
+            var systemUserServices = new SystemUserServices(mockRepo.Object);
+            var controller = new UserController(systemUserServices);
+            var request = new UserController.LoginRequest { Username = username, Password = plainPassword };
 
             // Act
             var result = await controller.Login(request);
 
             // Assert
-            // Note: This test will likely fail because there's no actual database setup
-            // Consider mocking SystemUserServices for unit testing
-            var actionResult = Assert.IsType<ActionResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var value = okResult.Value;
+            var tokenProp = value?.GetType().GetProperty("token");
+            Assert.NotNull(tokenProp);
+            var token = tokenProp.GetValue(value) as string;
+            Assert.False(string.IsNullOrEmpty(token));
         }
 
         [Fact]
-        public async Task UserController_Login_WithInValidCredentials_ReturnsUnauthorized()
+        public async Task UserController_Login_WithInvalidCredentials_ReturnsUnauthorized()
         {
             // Arrange
-            var mockPostgreSQLSettings = Mock.Of<IOptions<PostgreSQLSettings>>(x =>
-                x.Value == new PostgreSQLSettings
-                {
-                    ConnectionString = "test",
-                    CommandTimeout = 30,
-                    MaxPoolSize = 100
-                });
+            var username = "admin";
+            var wrongPassword = "wrong_password";
 
-            var mockLogger = Mock.Of<ILogger<PostgreSQLService>>();
-            var postgresService = new PostgreSQLService(mockPostgreSQLSettings, mockLogger);
-            var systemUserServices = new SystemUserServices(postgresService);
+            // Mock repo to return null (user not found) or a user with different password
+            var mockRepo = new Mock<IAspNetUserRepo>();
+            mockRepo
+                .Setup(r => r.GetUserByUsernameAsync(username))
+                .ReturnsAsync((AspNetUser?)null);
 
-            var controller = new UserController(systemUserServices, postgresService);
-            var request = new UserController.LoginRequest { Username = "admin", Password = "wrong_password" };
+            var systemUserServices = new SystemUserServices(mockRepo.Object);
+            var controller = new UserController(systemUserServices);
+            var request = new UserController.LoginRequest { Username = username, Password = wrongPassword };
 
             // Act
             var result = await controller.Login(request);
 
             // Assert
-            // Note: This test will likely fail because there's no actual database setup
-            // Consider mocking SystemUserServices for unit testing
-            var actionResult = Assert.IsType<ActionResult>(result);
+            var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(result);
+            var value = unauthorizedResult.Value;
+            var prop = value?.GetType().GetProperty("message");
+            Assert.NotNull(prop);
+            var message = prop.GetValue(value) as string;
+            Assert.Equal("Invalid username or password.", message);
         }
-
-        //[Fact]
-        //public void SystemUserServices_RegisterUser_ReturnsNewUserId()
-        //{
-        //    // This test is commented out as it requires complex database setup
-        //    // Consider using an in-memory database or mocking for unit tests
-        //}
     }
 }

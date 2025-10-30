@@ -17,8 +17,8 @@ namespace ApiServer.Postgres.Repository
 
         public async Task<int> CreateUserAsync(string username, string email, string passwordHash, string? phoneNumber = null)
         {
-            var sql = "INSERT INTO public.\"AspNetUsers\"\r\n(\"Id\", \"UserName\", \"NormalizedUserName\", \"Email\", \"NormalizedEmail\", \"EmailConfirmed\", \"PasswordHash\", \"PhoneNumber\", \"PhoneNumberConfirmed\", \"TwoFactorEnabled\", \"LockoutEnabled\", \"AccessFailedCount\")\r\n"
-                +"VALUES(@Id, @UserName, '', @Email, '', false, @PasswordHash, @PhoneNumber, false, false, false, 0);";
+            var sql = "INSERT INTO AspNetUsers (Id, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PasswordHash, PhoneNumber, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnabled, AccessFailedCount)"
+                +" VALUES(@Id, @UserName, '', @Email, '', false, @PasswordHash, @PhoneNumber, false, false, false, 0);";
 
             var parameters = new[]
             {
@@ -71,7 +71,7 @@ namespace ApiServer.Postgres.Repository
 
         public async Task<AspNetUser?> GetUserByUsernameAsync(string username)
         {
-            var sql = "SELECT * FROM public.\"AspNetUsers\" WHERE \"UserName\" = @UserName";
+            var sql = "SELECT * FROM AspNetUsers WHERE UserName = @UserName";
 
             var parameters = new[]
             {

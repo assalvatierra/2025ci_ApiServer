@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit;
+using System.Collections;
 
 namespace TestProject1
 {
@@ -91,4 +92,21 @@ namespace TestProject1
             Assert.Equal("Invalid username or password.", message);
         }
     }
+
+
+
+    public class CalculatorTestData : IEnumerable<object[]>
+    {
+        public IEnumerator<object[]> GetEnumerator()
+        {
+            yield return new object[] { 1, 2, 3 };
+            yield return new object[] { -4, -6, -10 };
+            yield return new object[] { -2, 2, 0 };
+            yield return new object[] { int.MinValue, -1, int.MaxValue };
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+
 }

@@ -1,46 +1,17 @@
 using ApiServer.Services;
+using ApiServer.MinimalAPI;
+using System.Runtime.CompilerServices;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
-    options.InstanceName = "Redis";
-});
-
-builder.Services.AddScoped<ApiServer.RedisCacheService>();
 
 builder.Services.AddControllers();
 // Add this line if not already present:
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
-// Register MongoDB settings and service. The settings are nested under ConnectionStrings:MongoDB in appsettings.json.
-builder.Services.Configure<ApiServer.Mongo.MongoDBSettings>(builder.Configuration.GetSection("ConnectionStrings:MongoDB"));
-builder.Services.AddSingleton<ApiServer.Mongo.MongodbService>();
 
-// Validate that MongoDB connection URI exists at startup to avoid obscure NullReference exceptions later.
-var mongoSettings = builder.Configuration.GetSection("ConnectionStrings:MongoDB").Get<ApiServer.Mongo.MongoDBSettings>();
-if (mongoSettings == null || string.IsNullOrWhiteSpace(mongoSettings.ConnectionURI))
-{
-    // Log and throw early so the developer sees a clear message
-    var logger = LoggerFactory.Create(lb => lb.AddConsole()).CreateLogger("Startup");
-    logger.LogError("MongoDB connection settings are missing or invalid. Check appsettings.json ConnectionStrings:MongoDB section.");
-    throw new ArgumentNullException("MongoDB:ConnectionURI", "MongoDB connection string is not configured. Check appsettings.json ConnectionStrings:MongoDB.ConnectionURI");
-}
-
-// Inject Custom Services
-builder.Services.AddScoped<ApiServer.Postgres.PostgreSQLService>();
-builder.Services.Configure<ApiServer.Postgres.PostgreSQLSettings>(options =>
-{
-    options.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    // Set other properties if needed, e.g.:
-    // options.CommandTimeout = 30;
-    // options.MaxPoolSize = 100;
-});
-
-builder.Services.AddScoped<ApiServer.Postgres.Repository.IAspNetUserRepo, ApiServer.Postgres.Repository.AspNetUserRepo>();
-builder.Services.AddScoped<SystemUserServices>();
+builder.addDependencies();
 
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -56,6 +27,11 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+// No changes required unless you want to register a custom route constraint.
+// The 'string' constraint is not built-in and is unnecessary for route parameters of type string.
+// If you need a custom constraint, register it here using:
+// builder.Services.Configure<RouteOptions>(options => { options.ConstraintMap.Add("yourConstraint", typeof(YourConstraintType)); });
 
 var app = builder.Build();
 
@@ -73,5 +49,9 @@ app.UseCors();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//var sampleApiGroup = app.MapGroup("api/sample");
+//sampleApiGroup.MapGet("/", () => "API Server is running....");
+app.MapSampleEndpoints();
 
 app.Run();

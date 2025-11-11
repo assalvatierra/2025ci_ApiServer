@@ -24,3 +24,13 @@ Accept: application/json
   "phoneNumber": "1234567890"
 }
 ###
+
+
+POST {{ApiServer_HostAddress}}/api/RabbitMq/send
+Content-Type: application/json
+Accept: application/json
+
+{
+  "message": "Test Message for rabbitMQ"
+}
+###

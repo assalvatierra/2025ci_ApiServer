@@ -1,5 +1,8 @@
 # @ApiServer_HostAddress = http://localhost:5131
-@ApiServer_HostAddress = https://localhost:44322
+# @ApiServer_HostAddress = https://localhost:44322
+@ApiServer_HostAddress = https://localhost:7083
+
+
 
 GET {{ApiServer_HostAddress}}/api/User/test
 ###

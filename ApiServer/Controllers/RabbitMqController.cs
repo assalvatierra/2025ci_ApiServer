@@ -1,10 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using RabbitMQ.Client;
 using System.Text;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace ApiServer.Controllers
 {
+    public class RabbitMqMessageDto
+    {
+        [Required]
+        public string Message { get; set; }
+    }
+
 
     [ApiController]
     [Route("api/[controller]")]
@@ -20,10 +26,14 @@ namespace ApiServer.Controllers
 
 
         [HttpPost("send")]
-        public IActionResult SendMessage([FromBody] string message)
+        public IActionResult Send([FromBody] RabbitMqMessageDto dto)
         {
-            message = string.IsNullOrEmpty(message) ? "Hello RabbitMQ!" : message;
-            //using (var channel = ((Connection)_connection).CreateModel())
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            var message = string.IsNullOrEmpty(dto.Message) ? "Hello RabbitMQ!" : dto.Message;
             using (var channel = _connection.CreateModel())
             {
                 channel.QueueDeclare(queue: "testQueue",
@@ -40,7 +50,7 @@ namespace ApiServer.Controllers
                                      body: body);
             }
 
-            return Ok("Message sent to RabbitMQ");
+            return Ok(new { status = "Message sent", message = dto.Message });
         }
     }
 }

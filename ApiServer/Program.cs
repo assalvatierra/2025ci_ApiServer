@@ -12,7 +12,7 @@ builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 
 builder.addDependencies();
-
+builder.Services.AddHostedService<RabbitMqConsumer>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 //builder.Services.AddOpenApi();
@@ -23,8 +23,8 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
     {
         policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        .AllowAnyMethod()
+        .AllowAnyHeader();
     });
 });
 
